@@ -1,0 +1,16 @@
+{
+  "unique_key": "https://books.toscrape.com/catalogue/page-1.html",
+  "url": "https://books.toscrape.com/catalogue/page-1.html",
+  "method": "GET",
+  "payload": null,
+  "headers": {},
+  "user_data": {
+    "__crawlee": {
+      "state": 6
+    }
+  },
+  "retry_count": 3,
+  "no_retry": false,
+  "loaded_url": "https://books.toscrape.com/catalogue/page-1.html",
+  "handled_at": "2026-08-12 17:23:38.957462+00:00"
+}
