@@ -1,5 +1,6 @@
 import asyncio
 from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
+from urllib.parse import urljoin
 
 async def main() -> None:
     # Инициализируем краулер на базе Playwright
@@ -45,11 +46,23 @@ async def main() -> None:
                 "Ссылка": link
             })
             
-        # 3. Ищем кнопку "Дальше" и добавляем следующую страницу в очередь
-        # 3. Прокручиваем страницу вниз, чтобы подгрузить кнопку пагинации
+        # 3. Прокручиваем страницу вниз и явно ищем ссылку "Дальше"
         await context.page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-        await context.page.wait_for_timeout(1000) # Пауза 1 секунда
+        await context.page.wait_for_timeout(1000)
 
+        next_button = context.page.locator('[data-qa="pager-next"]')
+        
+        if await next_button.count() > 0:
+            next_href = await next_button.get_attribute('href')
+            if next_href:
+                # Собираем полный URL из относительного адреса
+                next_url = urljoin(context.request.url, next_href)
+                context.log.info(f"Найдена следующая страница: {next_url}")
+                # Принудительно добавляем ссылку в очередь задач
+                await context.add_requests([next_url])
+        else:
+            context.log.info("Кнопка 'Дальше' не найдена на странице.")
+        
         # Переходим на следующую страницу
         await context.enqueue_links(
             selector='a[data-qa="pager-next"]'
