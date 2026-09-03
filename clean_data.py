@@ -2,8 +2,18 @@ import pandas as pd
 import re
 import numpy as np
 
+# Загрузка собранных данных
+print("Загрузка исходного датасета...")
 df = pd.read_csv("hh_analytics_dataset.csv")
+
+# Удаляем дубликаты по ссылке на вакансию
 df = df.drop_duplicates(subset=["Ссылка"]).copy()
+
+# --- НОВЫЙ БЛОК: ФИЛЬТРАЦИЯ ПО НАЗВАНИЮ ДОЛЖНОСТИ ---
+# Создаем маску из ключевых слов (регистр не учитывается)
+keywords = 'аналитик|analyst|data|bi|анализ|математик'
+df = df[df["Должность"].str.contains(keywords, case=False, na=False)].copy()
+print(f"Строк после фильтрации целевых должностей: {len(df)}")
 
 def parse_salary(text):
     if pd.isna(text) or text == "Не указана":
